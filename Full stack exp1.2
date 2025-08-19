@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Bank — Responsive UI (HTML5)</title>
+  <style>
+    :root{
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --text: #0f172a; /* slate-900 */
+      --muted: #475569; /* slate-600 */
+      --border: #e2e8f0; /* slate-200 */
+      --ring: #94a3b8;   /* slate-400 */
+      --emerald: #059669;
+      --emerald-700: #047857;
+      --rose: #e11d48;
+      --rose-700: #be123c;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text); background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
+    }
+    .container{ max-width: 1100px; margin: 0 auto; padding: 24px; }
+    header{ display:flex; gap:16px; align-items:flex-start; justify-content:space-between; margin-bottom: 24px; flex-wrap: wrap; }
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .brand-icon{ width:44px; height:44px; border-radius:16px; display:grid; place-items:center; background:var(--card); border:1px solid var(--border); box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+    .brand h1{ margin:0; font-size: clamp(20px, 2vw, 28px); font-weight: 700; letter-spacing:-.02em; }
+    .brand p{ margin:2px 0 0; color: var(--muted); font-size: 13px; }
+
+    .controls{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    select, .btn, input[type="text"]{
+      border:1px solid var(--border); background: #fff; padding:10px 12px; border-radius: 12px; font-size: 14px; outline: none;
+    }
+    select:focus, input[type="text"]:focus{ box-shadow: 0 0 0 3px rgba(148,163,184,.35); border-color: var(--ring); }
+    .btn{ display:inline-flex; gap:8px; align-items:center; cursor:pointer; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+    .btn:hover{ background:#fafafa; }
+
+    /* Grid */
+    .grid{ display:grid; grid-template-columns: 1fr; gap: 24px; }
+    @media (min-width: 1024px){ .grid{ grid-template-columns: 1fr 2fr; } }
+
+    /* Card */
+    .card{ background: var(--card); border:1px solid var(--border); border-radius: 18px; padding: 20px; box-shadow: 0 1px 3px rgba(15,23,42,.06); }
+
+    /* Balance */
+    .label{ color:var(--muted); font-size: 14px; margin-bottom:4px; }
+    .balance{ font-weight: 800; letter-spacing:-.02em; font-size: clamp(28px, 4.5vw, 40px); }
+
+    .chips{ margin-top: 16px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .chip{ border:1px solid var(--border); background:#f8fafc; padding:8px 10px; border-radius: 12px; font-size: 14px; cursor:pointer; }
+    .chip:hover{ background:#fff; }
+
+    .field{ display:flex; gap:8px; margin-top: 16px; }
+    .field input{ flex:1; padding:12px 14px; border-radius: 12px; font-size: 16px; }
+
+    .actions{ margin-top: 12px; display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-primary{ background: var(--emerald); color:#fff; border: none; }
+    .btn-primary:hover{ background: var(--emerald-700); }
+    .btn-danger{ background: var(--rose); color:#fff; border:none; }
+    .btn-danger:hover{ background: var(--rose-700); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .hint{ margin-top:8px; color:#64748b; font-size: 12px; }
+
+    /* History */
+    .history-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 12px; }
+    .history-list{ list-style:none; margin:0; padding:0; border-top:1px solid #f1f5f9; }
+    .history-item{ display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f1f5f9; }
+    .tx-kind{ font-weight: 600; text-transform: capitalize; }
+    .tx-time{ color:#64748b; font-size:12px; margin-top:2px; }
+    .empty{ border:1px dashed var(--border); border-radius: 16px; padding: 24px; text-align:center; color:#64748b; }
+
+    footer{ text-align:center; color:#94a3b8; font-size:12px; margin-top: 28px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand" aria-label="My Bank">
+        <div class="brand-icon" aria-hidden="true">🏦</div>
+        <div>
+          <h1>My Bank</h1>
+          <p>Simple, responsive banking UI (HTML5 + JS)</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <label for="currency" style="font-size:13px;color:var(--muted)">Currency</label>
+        <select id="currency" aria-label="Choose currency">
+          <option>INR</option>
+          <option>USD</option>
+          <option>EUR</option>
+          <option>GBP</option>
+          <option>JPY</option>
+        </select>
+        <button id="resetAll" class="btn" title="Reset account">↺ Reset</button>
+      </div>
+    </header>
+
+    <main class="grid" id="app" aria-live="polite">
+      <!-- Balance Card -->
+      <section class="card" aria-labelledby="balanceTitle">
+        <p class="label" id="balanceTitle">Current Balance</p>
+        <div class="balance" id="balance" role="status" aria-live="polite">₹0.00</div>
+
+        <div class="chips">
+          <button class="chip" data-quick="100">+100</button>
+          <button class="chip" data-quick="500">+500</button>
+          <button class="chip" data-quick="1000">+1000</button>
+        </div>
+
+        <div class="field">
+          <input id="amount" type="text" inputmode="decimal" placeholder="Enter amount" aria-label="Amount" />
+        </div>
+
+        <div class="actions">
+          <button id="deposit" class="btn btn-primary">➕ Deposit</button>
+          <button id="withdraw" class="btn btn-danger">➖ Withdraw</button>
+        </div>
+        <p class="hint">Tip: Use quick chips or type a custom value. Withdraw is disabled if funds are insufficient.</p>
+      </section>
+
+      <!-- History Card -->
+      <section class="card" aria-labelledby="historyTitle">
+        <div class="history-head">
+          <h2 id="historyTitle" style="margin:0">Transactions</h2>
+          <div style="display:flex; gap:8px; align-items:center">
+            <select id="filter" aria-label="Filter transactions">
+              <option value="all">All</option>
+              <option value="deposit">Deposits</option>
+              <option value="withdraw">Withdrawals</option>
+            </select>
+            <button id="clearHistory" class="btn">🗑️ Clear</button>
+          </div>
+        </div>
+        <div id="empty" class="empty">No transactions yet. Make a deposit or withdrawal to get started.</div>
+        <ul id="history" class="history-list" hidden></ul>
+      </section>
+    </main>
+
+    <footer>Built with semantic HTML5, CSS, and vanilla JS.</footer>
+  </div>
+
+  <script>
+    (function(){
+      const el = (id) => document.getElementById(id);
+      const balanceEl = el('balance');
+      const amountEl = el('amount');
+      const depositBtn = el('deposit');
+      const withdrawBtn = el('withdraw');
+      const resetBtn = el('resetAll');
+      const currencySel = el('currency');
+      const filterSel = el('filter');
+      const clearBtn = el('clearHistory');
+      const historyList = el('history');
+      const emptyState = el('empty');
+
+      // Load state
+      const saved = JSON.parse(localStorage.getItem('bank-ui-html') || '{}');
+      let balance = Number.isFinite(saved.balance) ? saved.balance : 0;
+      let transactions = Array.isArray(saved.transactions) ? saved.transactions : [];
+      let currency = typeof saved.currency === 'string' ? saved.currency : 'INR';
+
+      currencySel.value = currency;
+
+      function round2(n){ return Math.round(n * 100) / 100; }
+      function fmt(n){ return new Intl.NumberFormat('en-IN', {style:'currency', currency}).format(n); }
+
+      function save(){ localStorage.setItem('bank-ui-html', JSON.stringify({ balance, transactions, currency })); }
+
+      function renderBalance(){ balanceEl.textContent = fmt(balance); }
+
+      function renderHistory(){
+        const filter = filterSel.value;
+        const list = filter === 'all' ? transactions : transactions.filter(t => t.type === filter);
+        historyList.innerHTML = '';
+        if (list.length === 0){
+          emptyState.hidden = false;
+          historyList.hidden = true;
+          return;
+        }
+        emptyState.hidden = true;
+        historyList.hidden = false;
+        for (const t of list){
+          const li = document.createElement('li');
+          li.className = 'history-item';
+          const left = document.createElement('div');
+          const kind = document.createElement('div');
+          kind.className = 'tx-kind';
+          kind.textContent = t.type;
+          const time = document.createElement('div');
+          time.className = 'tx-time';
+          time.textContent = new Date(t.time).toLocaleString();
+          left.appendChild(kind); left.appendChild(time);
+          const right = document.createElement('div');
+          right.style.fontWeight = '700';
+          right.textContent = (t.type === 'deposit' ? '+' : '-') + fmt(t.value);
+          li.appendChild(left); li.appendChild(right);
+          historyList.appendChild(li);
+        }
+      }
+
+      function pushTx(type, value){
+        const tx = { id: crypto.randomUUID(), type, value: round2(value), time: new Date().toISOString() };
+        transactions = [tx, ...transactions].slice(0, 100);
+      }
+
+      function parseAmount(){
+        const raw = amountEl.value.trim().replace(/,/g, '');
+        const n = parseFloat(raw);
+        return Number.isFinite(n) ? Math.max(0, round2(n)) : 0;
+      }
+
+      function updateButtons(){
+        const a = parseAmount();
+        depositBtn.disabled = !(a > 0);
+        withdrawBtn.disabled = !(a > 0 && a <= balance);
+      }
+
+      // Quick chips
+      document.querySelectorAll('[data-quick]').forEach(btn => {
+        btn.addEventListener('click', () => { amountEl.value = btn.dataset.quick; updateButtons(); });
+      });
+
+      amountEl.addEventListener('input', updateButtons);
+
+      depositBtn.addEventListener('click', () => {
+        const a = parseAmount(); if (!(a > 0)) return;
+        balance = round2(balance + a); pushTx('deposit', a); amountEl.value='';
+        renderBalance(); renderHistory(); updateButtons(); save();
+      });
+
+      withdrawBtn.addEventListener('click', () => {
+        const a = parseAmount(); if (!(a > 0)) return;
+        if (a > balance){ alert('Insufficient funds'); return; }
+        balance = round2(balance - a); pushTx('withdraw', a); amountEl.value='';
+        renderBalance(); renderHistory(); updateButtons(); save();
+      });
+
+      resetBtn.addEventListener('click', () => {
+        if (!confirm('Reset balance and clear history?')) return;
+        balance = 0; transactions = []; amountEl.value='';
+        renderBalance(); renderHistory(); updateButtons(); save();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        if (!confirm('Clear transaction history?')) return;
+        transactions = []; renderHistory(); save();
+      });
+
+      filterSel.addEventListener('change', renderHistory);
+
+      currencySel.addEventListener('change', () => {
+        currency = currencySel.value; renderBalance(); renderHistory(); save();
+      });
+
+      // Initial paint
+      renderBalance(); renderHistory(); updateButtons();
+    })();
+  </script>
+</body>
+</html>
