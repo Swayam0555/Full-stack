@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard</title>
+  <style>
+    :root{
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+    }
+    [data-theme="dark"]{
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+    }
+    * { box-sizing:border-box; }
+    body{
+      margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:grid; grid-template-columns: 240px 1fr; grid-template-rows: auto 1fr; grid-template-areas: "sidebar header" "sidebar main"; }
+    header{
+      grid-area: header; background:var(--card); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 16px; }
+    header h1{ font-size:18px; margin:0; }
+    header button{ padding:8px 14px; border:none; border-radius:8px; cursor:pointer; background:var(--primary); color:#fff; font-weight:500; }
+    header button:hover{ background:var(--primary-hover); }
+
+    aside{
+      grid-area: sidebar; background:var(--card); border-right:1px solid var(--border); padding:16px; display:flex; flex-direction:column; gap:12px; }
+    aside h2{ font-size:16px; margin-bottom:8px; }
+    aside a{ text-decoration:none; color:var(--text); padding:8px 12px; border-radius:8px; }
+    aside a:hover{ background:var(--border); }
+
+    main{
+      grid-area: main; padding:20px; display:grid; gap:20px; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; }
+    .card h3{ margin-top:0; font-size:16px; }
+
+    footer{ grid-column: 1/-1; text-align:center; padding:12px; font-size:13px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <aside>
+    <h2>Dashboard</h2>
+    <a href="#">Overview</a>
+    <a href="#">Users</a>
+    <a href="#">Reports</a>
+    <a href="#">Settings</a>
+  </aside>
+
+  <header>
+    <h1>Admin Dashboard</h1>
+    <button id="themeToggle">Switch Theme</button>
+  </header>
+
+  <main>
+    <div class="card">
+      <h3>Users</h3>
+      <p>Total: 1,230</p>
+    </div>
+    <div class="card">
+      <h3>Revenue</h3>
+      <p>$12,400</p>
+    </div>
+    <div class="card">
+      <h3>Performance</h3>
+      <p>95%</p>
+    </div>
+    <div class="card">
+      <h3>Alerts</h3>
+      <p>5 New</p>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 Admin Dashboard. Built with HTML5 + CSS Grid.
+  </footer>
+
+  <script>
+    const toggleBtn = document.getElementById('themeToggle');
+    toggleBtn.addEventListener('click', ()=>{
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      if(current === 'dark'){
+        root.removeAttribute('data-theme');
+        localStorage.setItem('theme','light');
+      } else {
+        root.setAttribute('data-theme','dark');
+        localStorage.setItem('theme','dark');
+      }
+    });
+    // On load
+    if(localStorage.getItem('theme')==='dark'){
+      document.documentElement.setAttribute('data-theme','dark');
+    }
+  </script>
+</body>
+</html>
