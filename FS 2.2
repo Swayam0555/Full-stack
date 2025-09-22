@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Filter Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f4f4f9;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .filter-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    select {
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .product {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .product:hover {
+      transform: translateY(-4px);
+    }
+
+    .product h3 {
+      margin: 10px 0 5px;
+    }
+
+    .product p {
+      color: #555;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Product List with Filter</h2>
+
+  <div class="filter-container">
+    <label for="categoryFilter">Filter by Category: </label>
+    <select id="categoryFilter">
+      <option value="all">All</option>
+      <option value="shoes">Shoes</option>
+      <option value="shirts">Shirts</option>
+      <option value="gadgets">Gadgets</option>
+    </select>
+  </div>
+
+  <div class="product-list" id="productList">
+    <div class="product" data-category="shoes">
+      <h3>Running Shoes</h3>
+      <p>Comfortable running shoes</p>
+    </div>
+    <div class="product" data-category="shirts">
+      <h3>Cotton Shirt</h3>
+      <p>Soft cotton casual shirt</p>
+    </div>
+    <div class="product" data-category="gadgets">
+      <h3>Smartphone</h3>
+      <p>Latest 5G smartphone</p>
+    </div>
+    <div class="product" data-category="shoes">
+      <h3>Formal Shoes</h3>
+      <p>Elegant leather formal shoes</p>
+    </div>
+    <div class="product" data-category="shirts">
+      <h3>T-Shirt</h3>
+      <p>Comfortable cotton t-shirt</p>
+    </div>
+    <div class="product" data-category="gadgets">
+      <h3>Wireless Earbuds</h3>
+      <p>Noise-cancelling earbuds</p>
+    </div>
+  </div>
+
+  <script>
+    const filterDropdown = document.getElementById("categoryFilter");
+    const products = document.querySelectorAll(".product");
+
+    filterDropdown.addEventListener("change", () => {
+      const selectedCategory = filterDropdown.value;
+
+      products.forEach(product => {
+        const productCategory = product.getAttribute("data-category");
+
+        if (selectedCategory === "all" || productCategory === selectedCategory) {
+          product.style.display = "block";
+        } else {
+          product.style.display = "none";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
