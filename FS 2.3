@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Drawing Canvas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      text-align: center;
+      margin: 40px;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    .canvas-container {
+      display: flex;
+      justify-content: center;
+    }
+
+    svg {
+      border: 2px solid #444;
+      background: white;
+      cursor: crosshair;
+    }
+  </style>
+</head>
+<body>
+  <h2>SVG Drawing Canvas (Click & Drag to Draw)</h2>
+  <div class="canvas-container">
+    <svg id="drawingCanvas" width="800" height="500"></svg>
+  </div>
+
+  <script>
+    const svg = document.getElementById("drawingCanvas");
+    let isDrawing = false;
+    let startX, startY;
+    let currentShape = null;
+
+    // Handle mouse down
+    svg.addEventListener("mousedown", (e) => {
+      isDrawing = true;
+      startX = e.offsetX;
+      startY = e.offsetY;
+
+      // Create a rectangle element
+      currentShape = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      currentShape.setAttribute("x", startX);
+      currentShape.setAttribute("y", startY);
+      currentShape.setAttribute("width", 0);
+      currentShape.setAttribute("height", 0);
+      currentShape.setAttribute("fill", "rgba(0, 123, 255, 0.3)");
+      currentShape.setAttribute("stroke", "#007bff");
+      currentShape.setAttribute("stroke-width", 2);
+
+      svg.appendChild(currentShape);
+    });
+
+    // Handle mouse move
+    svg.addEventListener("mousemove", (e) => {
+      if (!isDrawing) return;
+
+      const currentX = e.offsetX;
+      const currentY = e.offsetY;
+
+      const width = Math.abs(currentX - startX);
+      const height = Math.abs(currentY - startY);
+
+      const rectX = Math.min(currentX, startX);
+      const rectY = Math.min(currentY, startY);
+
+      currentShape.setAttribute("x", rectX);
+      currentShape.setAttribute("y", rectY);
+      currentShape.setAttribute("width", width);
+      currentShape.setAttribute("height", height);
+    });
+
+    // Handle mouse up
+    svg.addEventListener("mouseup", () => {
+      isDrawing = false;
+      currentShape = null; // finalize shape
+    });
+
+    // Prevent dragging outside SVG (safety)
+    svg.addEventListener("mouseleave", () => {
+      if (isDrawing) {
+        isDrawing = false;
+        currentShape = null;
+      }
+    });
+  </script>
+</body>
+</html>
